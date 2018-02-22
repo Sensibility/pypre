@@ -10,6 +10,7 @@ DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "PYTHON_MAJOR_VERSION": sys.version_info[0],
               "PYTHON_MINOR_VERSION": sys.version_info[1],
               "PYTHON_MICRO_VERSION": sys.version_info[2],
+              "PYTHON_IMPLEMENTATION": platform.python_implementation(),
               "OS": os.uname()[0],
               "ARCH": platform.machine(),
               "IS64": platform.architecture()[0] == "64bit"}
