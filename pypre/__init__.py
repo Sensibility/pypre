@@ -117,7 +117,7 @@ Some caveats and disclaimers:
 """
 
 __author__ = "ocket8888"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import argparse
 import sys
