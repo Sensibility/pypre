@@ -3,7 +3,7 @@ This package defines the way the preprocessor parses input files.
 """
 
 import re
-import pdb
+import sys
 
 from . import directives
 
@@ -35,7 +35,22 @@ _compare = {'=': lambda x,y: x == y,
             '<': lambda x,y: x < y,
             '!': lambda x,y: not x == y}
 
-def addDefine(line, lineNo=None, ctxt=None):
+_keywords = {}
+
+def warn(line, unused_lineNo, ctxt):
+	"""
+	Generates a warning message, but does not stop processing
+	"""
+	print(line.lstrip()[6:], file=sys.stderr)
+	return ctxt
+
+def error(line, lineNo, unused_ctxt):
+	"""
+	Generates an error message and ceases processing
+	"""
+	raise ParserError(line.lstrip()[7:], lineNo)
+
+def addDefine(line, lineNo, ctxt):
 	"""
 	Adds a '#define'd constant to the list of directives.
 	"""
@@ -45,9 +60,7 @@ def addDefine(line, lineNo=None, ctxt=None):
 		name = line[1]
 		value = line[2] if len(line) == 3 else None
 	except IndexError:
-		if lineNo is not None:
-			raise ParserError("Could not parse new/redefined constant", lineNo)
-		raise ParserError("Could not parse new/redefined constant.")
+		raise ParserError("Could not parse new/redefined constant", lineNo)
 
 	if value is not None:
 		try:
@@ -55,15 +68,13 @@ def addDefine(line, lineNo=None, ctxt=None):
 			value = eval(value)
 			#pylint: enable=W0123
 		except:
-			if lineNo is not None:
-				raise ParserError("Error parsing literal value for '%s'" % name, lineNo)
-			raise ParserError("Error parsing literal value for %s" % name)
+			raise ParserError("Error parsing literal value for '%s'" % name, lineNo)
 
 	directives.DIRECTIVES[name] = value
 
 	return ctxt
 
-def removeDefine(line, lineNo, ctxt):
+def removeDefine(line, unused_lineNo, ctxt):
 	"""
 	Handles '#undef' directives.
 	"""
@@ -74,7 +85,7 @@ def removeDefine(line, lineNo, ctxt):
 
 	return ctxt
 
-def ifdef(line, lineNo=None, ctxt=None):
+def ifdef(line, lineNo, ctxt):
 	"""
 	Handles a single `#ifdef` directive.
 
@@ -85,22 +96,26 @@ def ifdef(line, lineNo=None, ctxt=None):
 	try:
 		name = line[1]
 	except IndexError:
-		if lineNo is not None:
-			raise ParserError("'#ifdef' without argument", lineNo)
-		raise ParserError("'#ifdef' without argument")
+		raise ParserError("'#ifdef' without argument", lineNo)
 
 	endifPos = 0
 	elsePos = None
+	nest = 0
 	for n, srcLine in enumerate(ctxt):
-		if srcLine.strip().split(' \t')[0] == "#else":
+		strippedline = srcLine.strip()
+		if srcLine.strip().startswith('#if'):
+			nest += 1
+		elif strippedline.split(' \t')[0] == "#else" and not nest:
 			elsePos = n
-		elif srcLine.strip().split(' \t')[0] == "#endif":
-			endifPos = n
-			break
+		elif strippedline.split(' \t')[0] == "#endif":
+			if not nest:
+				endifPos = n
+				break
+			nest -= 1
+			if nest < 0:
+				raise ParserError("Extraneous '#endif'", lineNo)
 	else:
-		if lineNo is not None:
-			raise ParserError("'#ifdef' without '#endif'!", lineNo)
-		raise ParserError("'#ifdef' without '#endif'!")
+		raise ParserError("'#ifdef' without '#endif'!", lineNo)
 
 	if name in directives.DIRECTIVES:
 		if elsePos is not None:
@@ -111,7 +126,7 @@ def ifdef(line, lineNo=None, ctxt=None):
 		return ctxt[elsePos+1:endifPos] + ctxt[endifPos+1:]
 	return ctxt[endifPos+1:]
 
-def ifndef(line, lineNo=None, ctxt=None):
+def ifndef(line, lineNo, ctxt):
 	"""
 	Handles a single `#ifdef` directive.
 	"""
@@ -120,22 +135,26 @@ def ifndef(line, lineNo=None, ctxt=None):
 	try:
 		name = line[1]
 	except IndexError:
-		if lineNo is not None:
-			raise ParserError("'#ifndef' without argument", lineNo)
-		raise ParserError("'#ifndef' without argument")
+		raise ParserError("'#ifndef' without argument", lineNo)
 
 	endifPos = 0
 	elsePos = None
+	nest = 0
 	for n, srcLine in enumerate(ctxt):
-		if srcLine.strip().split(' \t')[0] == "#else":
+		strippedline = srcLine.strip()
+		if srcLine.strip().startswith('#if'):
+			nest += 1
+		elif strippedline.split(' \t')[0] == "#else" and not nest:
 			elsePos = n
-		elif srcLine.strip().split(' \t')[0] == "#endif":
-			endifPos = n
-			break
+		elif strippedline.split(' \t')[0] == "#endif":
+			if not nest:
+				endifPos = n
+				break
+			nest -= 1
+			if nest < 0:
+				raise ParserError("Extraneous '#endif'", lineNo)
 	else:
-		if lineNo is not None:
-			raise ParserError("'#ifndef' without '#endif'!", lineNo)
-		raise ParserError("'#ifndef' without '#endif'!")
+		raise ParserError("'#ifndef' without '#endif'!", lineNo)
 
 	if name not in directives.DIRECTIVES:
 		if elsePos is not None:
@@ -146,7 +165,7 @@ def ifndef(line, lineNo=None, ctxt=None):
 		return ctxt[elsePos+1:endifPos] + ctxt[endifPos+1:]
 	return ctxt[endifPos+1:]
 
-def condition(line, lineNo=None, ctxt=None):
+def condition(line, lineNo, ctxt):
 	"""
 	Handles a basic condition of the form `#if <VALUE> [<OP> <VALUE>]`
 	"""
@@ -162,9 +181,7 @@ def condition(line, lineNo=None, ctxt=None):
 			try:
 				cnd = eval(line[1])
 			except:
-				if lineNo is not None:
-					raise ParserError("Error parsing literal value", lineNo)
-				raise ParserError("Error parsing literal value")
+				raise ParserError("Error parsing literal value", lineNo)
 
 	elif len(line) == 4:
 		if line[1] in directives.DIRECTIVES:
@@ -173,9 +190,7 @@ def condition(line, lineNo=None, ctxt=None):
 			try:
 				line[1] = eval(line[1])
 			except:
-				if lineNo is not None:
-					raise ParserError("Error parsing literal value", lineNo)
-				raise ParserError("Error parsing literal value")
+				raise ParserError("Error parsing literal value", lineNo)
 
 		if line[3] in directives.DIRECTIVES:
 			line[3] = directives.DIRECTIVES[line[1]]
@@ -183,30 +198,30 @@ def condition(line, lineNo=None, ctxt=None):
 			try:
 				line[3] = eval(line[3])
 			except:
-				pdb.set_trace()
-				if lineNo is not None:
-					raise ParserError("Error parsing literal value", lineNo)
-				raise ParserError("Error parsing literal value")
+				raise ParserError("Error parsing literal value", lineNo)
 
 		cnd = _compare[line[2]](line[1], line[3])
 
-	elif lineNo is not None:
-		raise ParserError("Malformed condition: '%s'" % ' '.join(line), lineNo)
 	else:
-		raise ParserError("Malformed condition: '%s'" % ' '.join(line))
+		raise ParserError("Malformed condition: '%s'" % ' '.join(line), lineNo)
 	#pylint: enable=W0123
 
-	endifPos, elsePos = 0, None
+	endifPos, elsePos, nest = 0, None, 0
 	for n, srcLine in enumerate(ctxt):
-		if srcLine.strip().split(' \t')[0] == '#else':
+		strippedline = srcLine.strip()
+		if srcLine.strip().startswith('#if'):
+			nest += 1
+		elif strippedline.split(' \t')[0] == "#else" and not nest:
 			elsePos = n
-		elif srcLine.strip().split(' \t')[0] == '#endif':
-			endifPos = n
-			break
+		elif strippedline.split(' \t')[0] == "#endif":
+			if not nest:
+				endifPos = n
+				break
+			nest -= 1
+			if nest < 0:
+				raise ParserError("Extraneous '#endif'", lineNo)
 	else:
-		if lineNo is not None:
-			raise ParserError("'#if' without '#endif'!", lineNo)
-		raise ParserError("'#if' without '#endif'!")
+		raise ParserError("'#if' without '#endif'!", lineNo)
 
 	if cnd:
 		if elsePos is not None:
@@ -222,7 +237,10 @@ _keywords = {re.compile(r"^#define \w+( .*)?$"): addDefine,
              re.compile(r"^#undef \w+"): removeDefine,
 			 re.compile(r"^#ifdef \w+$"): ifdef,
 			 re.compile(r"^#ifndef \w+$"): ifndef,
-			 re.compile(r"^#if .+ (=|<|>|!) .+$"): condition}
+			 re.compile(r"^#if .+ (=|<|>|!) .+$"): condition,
+			 re.compile(r"^#if .+$"): condition,
+			 re.compile(r"^#warn .*$"): warn,
+			 re.compile(r"^#error .*$"): error}
 
 def Parse(infile):
 	"""
@@ -236,12 +254,9 @@ def Parse(infile):
 
 	while True:
 		for keyword in _keywords:
-			try:
-				if keyword.match(lines[lineNo-1].strip()) is not None:
-					lines = lines[:lineNo-1] + _keywords[keyword](lines[lineNo-1], lineNo, lines[lineNo:])
-					break
-			except IndexError:
-				pdb.set_trace()
+			if keyword.match(lines[lineNo-1].strip()) is not None:
+				lines = lines[:lineNo-1] + _keywords[keyword](lines[lineNo-1], lineNo, lines[lineNo:])
+				break
 		lineNo += 1
 
 		if lineNo >= len(lines):

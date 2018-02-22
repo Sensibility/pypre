@@ -82,4 +82,3 @@ def readEnv():
 		DIRECTIVES["PYTHON_VERSION"] = (DIRECTIVES["PYTHON_MAJOR_VERSION"],
 		                                DIRECTIVES["PYTHON_MINOR_VERSION"],
 		                                DIRECTIVES["PYTHON_MICRO_VERSION"])
-
