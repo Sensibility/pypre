@@ -1,0 +1,31 @@
+#define TEST "quest"
+
+#ifdef TEST
+This should still be here
+#else
+This shouldn't
+#endif
+
+#ifdef NOT_DEFINED
+Get rid of me
+#else
+but not me
+#endif
+
+#ifndef TEST
+This should not still be here
+
+#else
+This should
+#endif
+
+#if PYTHON_MAJOR_VERSION = 3
+This should be here, but only if I didn't override that.
+#endif
+
+#if ARCH ! "notanarch"
+This should always be here
+
+#else
+This should not.
+#endif
