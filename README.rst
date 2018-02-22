@@ -23,32 +23,35 @@ The syntax for the preprocessor is fairly simple:
 
 -  ``#define <CONST> [<VALUE>]``
 
-       This defines a new constant name "CONST", optionally with the
-       value "VALUE". If a VALUE
-       is not specified, "CONST" will be assigned the value ``None``.
-       "VALUE" **must** be a python
-       literal value. The primitive objects currently supported are:
+       | This defines a new constant name "CONST", optionally with the
+         value "VALUE". If a VALUE
+       | is not specified, "CONST" will be assigned the value ``None``.
+         "VALUE" **must** be a python
+       | literal value. The primitive objects currently supported are:
 
-       -  ``int``
-       -  ``float``
-       -  ``str``
-       -  ``bytes``
+   -  ``int``
+   -  ``float``
+   -  ``str``
+   -  ``bytes``
+
           This also includes the following primitive collections of
           these types:
-       -  ``list``
-       -  ``tuple``
-       -  ``dict``
-       -  ``set``
-          Finally, values **MUST** be literal. pypre cannot and will not
-          interpret ``#define``\ s that
-          include ``#define``\ d constant names.
-          *NOTE:* This preprocessor (unlike the C/C++ preprocessors)
-          will not replace instances of
-          names of ``#define``\ d constants with their values in the
-          code. It's only meant for
-          conditional compilation, and replacing names with constants
-          saves a miniscule amount of
-          time at runtime for the vast majority of Python scripts.
+
+   -  ``list``
+   -  ``tuple``
+   -  ``dict``
+   -  ``set``
+
+          | Finally, values **MUST** be literal. pypre cannot and will
+            not interpret ``#define``\ s that
+          | include ``#define``\ d constant names.
+          | *NOTE:* This preprocessor (unlike the C/C++ preprocessors)
+            will not replace instances of
+          | names of ``#define``\ d constants with their values in the
+            code. It's only meant for
+          | conditional compilation, and replacing names with constants
+            saves a miniscule amount of
+          | time at runtime for the vast majority of Python scripts.
 
 -  ``#undef <CONST>``
 
@@ -88,20 +91,26 @@ The syntax for the preprocessor is fairly simple:
          "VALUE" in the first form, and
        | "OP" is a boolean operator. Valid operators and their
          definition are:
-       | >> \* ``=``
-       | >>> The Equality Operator - tests that the two values are
-         equal.
-       | >> \* ``!``
-       | >>> The Inequality Operator - tests that the two values are NOT
-         equal.
-       | >> \* ``<``
-       | >>> The Less-Than Operator - tests that the first value is
-         strictly less than the
-       | >>> second.
-       | >> \* ``>``
-       | >>> The Greater-Than Operator - tests that the first value is
-         strictly greater than
-       | >>> the second.
+
+   -  ``=``
+
+              The Equality Operator - tests that the two values are
+              equal.
+
+   -  ``!``
+
+              The Inequality Operator - tests that the two values are
+              NOT equal.
+
+   -  ``<``
+
+              The Less-Than Operator - tests that the first value is
+              strictly less than the second.
+
+   -  ``>``
+
+              The Greater-Than Operator - tests that the first value is
+              strictly greater than the second.
 
 -  ``#else``
 

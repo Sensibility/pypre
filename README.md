@@ -17,15 +17,15 @@ The syntax for the preprocessor is fairly simple:
 	> This defines a new constant name "CONST", optionally with the value "VALUE". If a VALUE
 	> is not specified, "CONST" will be assigned the value `None`. "VALUE" **must** be a python
 	> literal value. The primitive objects currently supported are:
-	> * `int`
-	> * `float`
-	> * `str`
-	> * `bytes`
+	* `int`
+	* `float`
+	* `str`
+	* `bytes`  
 	> This also includes the following primitive collections of these types:
-	> * `list`
-	> * `tuple`
-	> * `dict`
-	> * `set`
+	* `list`
+	* `tuple`
+	* `dict`
+	* `set`  
 	> Finally, values **MUST** be literal. pypre cannot and will not interpret `#define`s that
 	> include `#define`d constant names.
 	> *NOTE:* This preprocessor (unlike the C/C++ preprocessors) will not replace instances of
@@ -51,16 +51,14 @@ The syntax for the preprocessor is fairly simple:
 		>> `<VALUE> <OP> <VALUE>`
 	> Where each "VALUE" is anything that would be valid for a "VALUE" in the first form, and
 	> "OP" is a boolean operator. Valid operators and their definition are:
-		>> * `=`
-			>>> The Equality Operator - tests that the two values are equal.
-		>> * `!`
-			>>> The Inequality Operator - tests that the two values are NOT equal.
-		>> * `<`
-			>>> The Less-Than Operator - tests that the first value is strictly less than the
-			>>> second.
-		>> * `>`
-			>>> The Greater-Than Operator - tests that the first value is strictly greater than
-			>>> the second.
+	* `=`
+	>> The Equality Operator - tests that the two values are equal.
+	* `!`
+	>> The Inequality Operator - tests that the two values are NOT equal.
+	* `<`
+	>> The Less-Than Operator - tests that the first value is strictly less than the second.
+	* `>`
+	>> The Greater-Than Operator - tests that the first value is strictly greater than the second.
 * `#else`
 	> If found within a block of conditionally-compiled code, will begin a section of
 	> conditionally-code that will be included if and only if the lines between the directive
