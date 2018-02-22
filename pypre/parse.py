@@ -63,6 +63,17 @@ def addDefine(line, lineNo=None, ctxt=None):
 
 	return ctxt
 
+def removeDefine(line, lineNo, ctxt):
+	"""
+	Handles '#undef' directives.
+	"""
+	line = line.strip().split(' ')
+
+	if line[1] in directives.DIRECTIVES:
+		del directives.DIRECTIVES[line[1]]
+
+	return ctxt
+
 def ifdef(line, lineNo=None, ctxt=None):
 	"""
 	Handles a single `#ifdef` directive.
@@ -207,7 +218,8 @@ def condition(line, lineNo=None, ctxt=None):
 	return ctxt[endifPos+1:]
 
 
-_keywords = {re.compile(r"^#define \w+ .*$"): addDefine,
+_keywords = {re.compile(r"^#define \w+( .*)?$"): addDefine,
+             re.compile(r"^#undef \w+"): removeDefine,
 			 re.compile(r"^#ifdef \w+$"): ifdef,
 			 re.compile(r"^#ifndef \w+$"): ifndef,
 			 re.compile(r"^#if .+ (=|<|>|!) .+$"): condition}

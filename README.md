@@ -16,15 +16,15 @@ The syntax for the preprocessor is fairly simple:
 	> This defines a new constant name "CONST", optionally with the value "VALUE". If a VALUE
 	> is not specified, "CONST" will be assigned the value `None`. "VALUE" **must** be a python
 	> literal value. The primitive objects currently supported are:
-		>> * `int`
-		>> * `float`
-		>> * `str`
-		>> * `bytes`
+	> * `int`
+	> * `float`
+	> * `str`
+	> * `bytes`
 	> This also includes the following primitive collections of these types:
-		>> * `list`
-		>> * `tuple`
-		>> * `dict`
-		>> * `set`
+	> * `list`
+	> * `tuple`
+	> * `dict`
+	> * `set`
 	> Finally, values **MUST** be literal. pypre cannot and will not interpret `#define`s that
 	> include `#define`d constant names.
 	> *NOTE:* This preprocessor (unlike the C/C++ preprocessors) will not replace instances of
@@ -92,7 +92,7 @@ of the same name:
    `os.uname()`.
 * `ARCH` - A string specifying the system's architecture. Defaults to the output of
    `platform.machine()`
-* `IS64` - True if the host processor is 64-bit, otherwise 32-bit. Default is determined using
+* `IS64` - True if the host processor is 64-bit, otherwise False. Default is determined using
    the `bits` part of the output of `platform.architecture()`.
 
 Note that if you do choose to override these values, you MUST match their type. For example, if
@@ -100,7 +100,7 @@ the name `FOO` is provided with a value of (b'\x69', 15.2), you must provide a v
 2-tuple of the form (`bytes`, `float`). In bash, this example would look like:
 
 ```bash
-FOO="(b'my overridden bytes', -1.1)"
+FOO="(b'my overridden bytes', -1.1)" pypre
 ```
 
 Some caveats and disclaimers:

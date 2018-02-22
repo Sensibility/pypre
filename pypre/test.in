@@ -19,6 +19,14 @@ This should not still be here
 This should
 #endif
 
+#undef QUEST
+
+#undef TEST
+
+#ifdef TEST
+Now this should not still be here
+#endif
+
 #if PYTHON_MAJOR_VERSION = 3
 This should be here, but only if I didn't override that.
 #endif
