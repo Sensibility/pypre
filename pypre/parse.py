@@ -232,7 +232,6 @@ def condition(line, lineNo, ctxt):
 		return ctxt[elsePos+1:endifPos] + ctxt[endifPos+1:]
 	return ctxt[endifPos+1:]
 
-
 _keywords = {re.compile(r"^#define \w+( .*)?$"): addDefine,
              re.compile(r"^#undef \w+"): removeDefine,
 			 re.compile(r"^#ifdef \w+$"): ifdef,

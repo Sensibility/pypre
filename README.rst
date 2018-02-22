@@ -175,6 +175,20 @@ Guaranteed Values
        determined using the ``bits`` part of the output of
        ``platform.architecture()``.
 
+-  ``__DATE__``
+
+       A literal ``str`` containing the date on which the pre-processing
+       is occurring, in the same format as the C++ macro of the same
+       name: "Mmm dd yyyy". The default value is obtained from the
+       output of ``time.strftime("%b %d %Y")``.
+
+-  ``__TIME__``
+
+       A literal ``str`` containing the local time at which the
+       pre-processing is occurring, in the same format as the C++ macro
+       of the same name: "hh:mm:ss". The default value is obtained from
+       the output of ``time.strftime("%H:%M:%S")``.
+
 | Note that if you do choose to override these values, you MUST match
   their type. For example, if
 | the name ``FOO`` is provided with a value of (b'\\x69', 15.2), you

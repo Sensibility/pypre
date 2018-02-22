@@ -5,6 +5,7 @@ This module defines the acceptable directives and methods for adding them.
 import platform
 import sys
 import os
+import time
 
 DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "PYTHON_MAJOR_VERSION": sys.version_info[0],
@@ -13,7 +14,9 @@ DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "PYTHON_IMPLEMENTATION": platform.python_implementation(),
               "OS": os.uname()[0],
               "ARCH": platform.machine(),
-              "IS64": platform.architecture()[0] == "64bit"}
+              "IS64": platform.architecture()[0] == "64bit",
+              "__DATE__": time.strftime("%b %d %Y"),
+              "__TIME__": time.strftime("%H:%M:%S")}
 
 _overridden = set()
 
