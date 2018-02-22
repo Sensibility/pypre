@@ -3,13 +3,14 @@ A python preprocessor
 
 This package is meant to pre-process raw python 3 files.
 
-Usage:
+## Usage
 
 	pypre [ -i INPUT_FILE or --input INPUT_FILE ] [ -o OUTPUT_FILE --output OUTPUT_FILE ]
 
 If an input file is not given, pypre will read input on stdin. Likewise, if an output file is not
 given, pypre will write output to stdout.
 
+## Syntax
 The syntax for the preprocessor is fairly simple:
 
 * `#define <CONST> [<VALUE>]`
@@ -31,6 +32,8 @@ The syntax for the preprocessor is fairly simple:
 	> names of `#define`d constants with their values in the code. It's only meant for
 	> conditional compilation, and replacing names with constants saves a miniscule amount of
 	> time at runtime for the vast majority of Python scripts.
+* `#undef <CONST>`
+	> Removes the definition of the name specified by "CONST". If the name wasn't defined in the first place, nothing happens (or at least it shouldn't).
 * `#ifdef <CONST>`
 	> Begins a block of conditionally-compiled code. All code up to the _next_ terminator will
 	> be included in the output if and only if the constant named by "CONST" has been defined.
@@ -66,6 +69,7 @@ The syntax for the preprocessor is fairly simple:
 	> Ends a block of conditionally-compiled code. For every `#if`, `#ifdef` and `ifndef`,
 	> there must be exactly one `#endif`.
 
+## Guaranteed Values
 The following values are defined at runtime, and can be overridden with an environment variable
 of the same name:
 
@@ -103,16 +107,8 @@ the name `FOO` is provided with a value of (b'\x69', 15.2), you must provide a v
 FOO="(b'my overridden bytes', -1.1)" pypre
 ```
 
-Some caveats and disclaimers:
-	* pypre does **not** as of this time support nested conditions. Placing an `#if`, `#ifdef` or
-	  `#ifndef` in between an `#if*` and its `#endif` will almost always result in an error.
-	* Do not use spaces in your names or values (except between elements in collections) as this
-	  will instantly crash the preprocessor.
-	* pypre is only built for, and only tested against Python 3 versions. Don't be surprised if
-	  it doesn't work if run through your Python 2 interpreter. (Note that you can easily include
-	  pypre directives in Python 2 code as long as pypre itself is run through Python 3, although
-	  it will require you to set `PYTHON_VERSION` yourself if you plan to use it.)
-	* Setting `PYTHON_VERSION` and one of the more specific "MAJOR"/"MINOR"/"MICRO" variables to
-	  non-compatible values will cause the preprocessor to immediately exit. For example, you
-	  can't have `PYTHON_VERSION=(2,7,0)` and `PYTHON_MAJOR_VERSION=3` - be sure your environment
-	  makes sense.
+## Some caveats and disclaimers:
+* pypre does **not** as of this time support nested conditions. Placing an `#if`, `#ifdef` or `#ifndef` in between an `#if*` and its `#endif` will almost always result in an error.
+* Do not use spaces in your names or values (except between elements in collections) as this will instantly crash the preprocessor.
+* pypre is only built for, and only tested against Python 3 versions. Don't be surprised if it doesn't work if run through your Python 2 interpreter. (Note that you can easily include pypre directives in Python 2 code as long as pypre itself is run through Python 3, although it will require you to set `PYTHON_VERSION` yourself if you plan to use it.)
+* Setting `PYTHON_VERSION` and one of the more specific "MAJOR"/"MINOR"/"MICRO" variables to non-compatible values will cause the preprocessor to immediately exit. For example, you can't have `PYTHON_VERSION=(2,7,0)` and `PYTHON_MAJOR_VERSION=3` - be sure your environment makes sense.
