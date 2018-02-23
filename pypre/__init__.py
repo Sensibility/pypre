@@ -282,7 +282,7 @@ def main() -> int:
 	parser.add_argument("-o",
 	                    "--output",
 	                    dest='output',
-	                    help='Output file to write to. If not given, pypre reads from stdin.',
+	                    help='Output file to write to. If not given, pypre writes to stdout.',
 	                    default=None,
 	                    type=str)
 
