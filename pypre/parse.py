@@ -35,12 +35,13 @@ class ParserError(Exception):
 	"""
 
 
-	def __init__(self, msg, line=None):
+	def __init__(self, fname, msg, line=None):
 		"""
 		docstring for ParserError.__init__
 		"""
 
 		super(ParserError, self).__init__()
+		self.fname = fname
 		self.msg = msg
 		self.line = line
 
@@ -49,8 +50,8 @@ class ParserError(Exception):
 		Implements 'str(self)'
 		"""
 		if self.line is not None:
-			return "%s - Line #%d" % (self.msg, self.line)
-		return self.msg
+			return "%s:%d %s" % (self.fname, self.line, self.msg)
+		return "%s: %s" % (self.fname, self.msg)
 
 _compare = {'=': lambda x,y: x == y,
             '>': lambda x,y: x > y,
@@ -59,20 +60,20 @@ _compare = {'=': lambda x,y: x == y,
 
 _keywords = {}
 
-def warn(line, unused_lineNo, ctxt):
+def warn(fname, line, lineNo, ctxt):
 	"""
 	Generates a warning message, but does not stop processing
 	"""
-	print(line.lstrip()[6:], file=sys.stderr)
+	print("%s:%d" % (fname, lineNo), line.lstrip()[6:], file=sys.stderr)
 	return ctxt
 
-def error(line, lineNo, unused_ctxt):
+def error(fname, line, lineNo, unused_ctxt):
 	"""
 	Generates an error message and ceases processing
 	"""
-	raise ParserError(line.lstrip()[7:], lineNo)
+	raise ParserError(fname, line.lstrip()[7:], lineNo)
 
-def addDefine(line, lineNo, ctxt):
+def addDefine(fname, line, lineNo, ctxt):
 	"""
 	Adds a '#define'd constant to the list of directives.
 	"""
@@ -82,7 +83,7 @@ def addDefine(line, lineNo, ctxt):
 		name = line[1]
 		value = line[2] if len(line) == 3 else None
 	except IndexError:
-		raise ParserError("Could not parse new/redefined constant", lineNo)
+		raise ParserError(fname, "Could not parse new/redefined constant", lineNo)
 
 	if value is not None:
 		try:
@@ -90,13 +91,13 @@ def addDefine(line, lineNo, ctxt):
 			value = eval(value)
 			#pylint: enable=W0123
 		except:
-			raise ParserError("Error parsing literal value for '%s'" % name, lineNo)
+			raise ParserError(fname, "Error parsing literal value for '%s'" % name, lineNo)
 
 	directives.DIRECTIVES[name] = value
 
 	return ctxt
 
-def removeDefine(line, unused_lineNo, ctxt):
+def removeDefine(unused_fname, line, unused_lineNo, ctxt):
 	"""
 	Handles '#undef' directives.
 	"""
@@ -107,7 +108,7 @@ def removeDefine(line, unused_lineNo, ctxt):
 
 	return ctxt
 
-def ifdef(line, lineNo, ctxt):
+def ifdef(fname, line, lineNo, ctxt):
 	"""
 	Handles a single `#ifdef` directive.
 
@@ -118,7 +119,7 @@ def ifdef(line, lineNo, ctxt):
 	try:
 		name = line[1]
 	except IndexError:
-		raise ParserError("'#ifdef' without argument", lineNo)
+		raise ParserError(fname, "'#ifdef' without argument", lineNo)
 
 	endifPos = 0
 	elsePos = None
@@ -135,9 +136,9 @@ def ifdef(line, lineNo, ctxt):
 				break
 			nest -= 1
 			if nest < 0:
-				raise ParserError("Extraneous '#endif'", lineNo)
+				raise ParserError(fname, "Extraneous '#endif'", lineNo)
 	else:
-		raise ParserError("'#ifdef' without '#endif'!", lineNo)
+		raise ParserError(fname, "'#ifdef' without '#endif'!", lineNo)
 
 	if name in directives.DIRECTIVES:
 		if elsePos is not None:
@@ -148,7 +149,7 @@ def ifdef(line, lineNo, ctxt):
 		return ctxt[elsePos+1:endifPos] + ctxt[endifPos+1:]
 	return ctxt[endifPos+1:]
 
-def ifndef(line, lineNo, ctxt):
+def ifndef(fname, line, lineNo, ctxt):
 	"""
 	Handles a single `#ifdef` directive.
 	"""
@@ -157,7 +158,7 @@ def ifndef(line, lineNo, ctxt):
 	try:
 		name = line[1]
 	except IndexError:
-		raise ParserError("'#ifndef' without argument", lineNo)
+		raise ParserError(fname, "'#ifndef' without argument", lineNo)
 
 	endifPos = 0
 	elsePos = None
@@ -174,9 +175,9 @@ def ifndef(line, lineNo, ctxt):
 				break
 			nest -= 1
 			if nest < 0:
-				raise ParserError("Extraneous '#endif'", lineNo)
+				raise ParserError(fname, "Extraneous '#endif'", lineNo)
 	else:
-		raise ParserError("'#ifndef' without '#endif'!", lineNo)
+		raise ParserError(fname, "'#ifndef' without '#endif'!", lineNo)
 
 	if name not in directives.DIRECTIVES:
 		if elsePos is not None:
@@ -187,7 +188,7 @@ def ifndef(line, lineNo, ctxt):
 		return ctxt[elsePos+1:endifPos] + ctxt[endifPos+1:]
 	return ctxt[endifPos+1:]
 
-def condition(line, lineNo, ctxt):
+def condition(fname, line, lineNo, ctxt):
 	"""
 	Handles a basic condition of the form `#if <VALUE> [<OP> <VALUE>]`
 	"""
@@ -203,7 +204,7 @@ def condition(line, lineNo, ctxt):
 			try:
 				cnd = eval(line[1])
 			except:
-				raise ParserError("Error parsing literal value", lineNo)
+				raise ParserError(fname, "Error parsing literal value", lineNo)
 
 	elif len(line) == 4:
 		if line[1] in directives.DIRECTIVES:
@@ -212,7 +213,7 @@ def condition(line, lineNo, ctxt):
 			try:
 				line[1] = eval(line[1])
 			except:
-				raise ParserError("Error parsing literal value", lineNo)
+				raise ParserError(fname, "Error parsing literal value", lineNo)
 
 		if line[3] in directives.DIRECTIVES:
 			line[3] = directives.DIRECTIVES[line[1]]
@@ -220,12 +221,12 @@ def condition(line, lineNo, ctxt):
 			try:
 				line[3] = eval(line[3])
 			except:
-				raise ParserError("Error parsing literal value", lineNo)
+				raise ParserError(fname, "Error parsing literal value", lineNo)
 
 		cnd = _compare[line[2]](line[1], line[3])
 
 	else:
-		raise ParserError("Malformed condition: '%s'" % ' '.join(line), lineNo)
+		raise ParserError(fname, "Malformed condition: '%s'" % ' '.join(line), lineNo)
 	#pylint: enable=W0123
 
 	endifPos, elsePos, nest = 0, None, 0
@@ -241,9 +242,9 @@ def condition(line, lineNo, ctxt):
 				break
 			nest -= 1
 			if nest < 0:
-				raise ParserError("Extraneous '#endif'", lineNo)
+				raise ParserError(fname, "Extraneous '#endif'", lineNo)
 	else:
-		raise ParserError("'#if' without '#endif'!", lineNo)
+		raise ParserError(fname, "'#if' without '#endif'!", lineNo)
 
 	if cnd:
 		if elsePos is not None:
@@ -276,7 +277,10 @@ def Parse(infile):
 	while True:
 		for keyword in _keywords:
 			if keyword.match(lines[lineNo-1].strip()) is not None:
-				lines = lines[:lineNo-1] + _keywords[keyword](lines[lineNo-1], lineNo, lines[lineNo:])
+				lines = lines[:lineNo-1] + _keywords[keyword](infile.name,
+				                                              lines[lineNo-1],
+				                                              lineNo,
+				                                              lines[lineNo:])
 				break
 		lineNo += 1
 
