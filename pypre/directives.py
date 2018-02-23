@@ -2,11 +2,34 @@
 This module defines the acceptable directives and methods for adding them.
 """
 
+"""
+Copyright 2018, Github (https://github.com/) user ocket8888 (https://github.com/ocket8888),
+                Github organization Sensibility (https://github.com/Sensibility)
+"""
+
+"""
+This file is part of pypre.
+
+    pypre is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    pypre is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with pypre.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import platform
 import sys
 import os
 import time
 import socket
+import struct
 
 DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "PYTHON_MAJOR_VERSION": sys.version_info[0],
