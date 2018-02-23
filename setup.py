@@ -103,7 +103,7 @@ setup(
 		'Environment :: Console',
 
 		# Supported Operating Systems
-		'Operating Systems :: OS Independent',
+		'Operating System :: OS Independent',
 
 		# Specify the Python versions you support here. In particular, ensure
 		# that you indicate whether you support Python 2, Python 3 or both.
