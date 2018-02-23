@@ -6,6 +6,7 @@ import platform
 import sys
 import os
 import time
+import socket
 
 DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "PYTHON_MAJOR_VERSION": sys.version_info[0],
@@ -16,7 +17,8 @@ DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "ARCH": platform.machine(),
               "IS64": platform.architecture()[0] == "64bit",
               "__DATE__": time.strftime("%b %d %Y"),
-              "__TIME__": time.strftime("%H:%M:%S")}
+              "__TIME__": time.strftime("%H:%M:%S"),
+              "__IPV6__": socket.has_ipv6}
 
 _overridden = set()
 

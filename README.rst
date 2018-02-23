@@ -189,6 +189,12 @@ Guaranteed Values
        of the same name: "hh:mm:ss". The default value is obtained from
        the output of ``time.strftime("%H:%M:%S")``.
 
+-  ``__IPV6__``
+
+       ``True`` if the system supports IPv6 addressing, ``False``
+       otherwise. Default value is obtained from the value of
+       ``socket.has_ipv6``.
+
 | Note that if you do choose to override these values, you MUST match
   their type. For example, if
 | the name ``FOO`` is provided with a value of (b'\\x69', 15.2), you
