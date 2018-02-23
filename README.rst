@@ -195,6 +195,19 @@ Guaranteed Values
        otherwise. Default value is obtained from the value of
        ``socket.has_ipv6``.
 
+-  ``__BYTE_ORDER__``
+
+       This is a value representing the native byte order of the host
+       machine. Its default value is calculated using the ``struct``
+       library and it has no particular guaranteed value. The only thing
+       that can be depended upon is that it will be equal to either
+       ``__BIG_ENDIAN__`` or ``__LITTLE_ENDIAN__``; never both and never
+       neither. *Implementation Note:* As of the time of this writing,
+       ``__BIG_ENDIAN__`` is set to the value ``1`` and
+       ``__LITTLE_ENDIAN__`` is set to the value ``0``. This is subject
+       to change as I may need to specify the endian-ness of bits or
+       gods only knows what else in the future.
+
 | Note that if you do choose to override these values, you MUST match
   their type. For example, if
 | the name ``FOO`` is provided with a value of (b'\\x69', 15.2), you

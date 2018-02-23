@@ -18,7 +18,12 @@ DIRECTIVES = {"PYTHON_VERSION": sys.version_info[:3],
               "IS64": platform.architecture()[0] == "64bit",
               "__DATE__": time.strftime("%b %d %Y"),
               "__TIME__": time.strftime("%H:%M:%S"),
-              "__IPV6__": socket.has_ipv6}
+              "__IPV6__": socket.has_ipv6,
+              "__BIG_ENDIAN__": 1,
+              "__LITTLE_ENDIAN__": 0}
+
+# Idk of any other way to do this
+DIRECTIVES["__BYTE_ORDER__"] = int(struct.unpack("=I", b'\x00\x00\x00\x01')[0] == 1)
 
 _overridden = set()
 
