@@ -282,6 +282,10 @@ def Parse(infile):
 				                                              lineNo,
 				                                              lines[lineNo:])
 				break
+		else:
+			for define, value in directives.DIRECTIVES.items():
+				lines[lineNo-1] = lines[lineNo-1].replace(define, str(value))
+
 		lineNo += 1
 
 		if lineNo >= len(lines):

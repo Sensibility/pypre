@@ -24,7 +24,9 @@ The syntax for the preprocessor is fairly simple:
 	> * `tuple`
 	> * `dict`
 	> * `set`  
-	> Finally, values **MUST** be literal. pypre cannot and will not interpret `#define`s that include `#define`d constant names. *NOTE:* This preprocessor (unlike the C/C++ preprocessors) will not replace instances of names of `#define`d constants with their values in the code. It's only meant for conditional compilation, and replacing names with constants saves a miniscule amount of time at runtime for the vast majority of Python scripts.
+	> Finally, values **MUST** be literal. pypre cannot and will not interpret `#define`s that include `#define`d constant names.  
+    Just like the C/C++ preprocessor, anywhere a ``#define``d constant is found within the source code (except on lines containing directives) it will be replaced with its value.  
+    *WARNING:* This does not yet check whether names are inside of string literals or comments.
 * `#undef <CONST>`
 	> Removes the definition of the name specified by "CONST". If the name wasn't defined in the first place, nothing happens (or at least it shouldn't).
 * `#ifdef <CONST>`

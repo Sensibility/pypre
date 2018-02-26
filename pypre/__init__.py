@@ -36,12 +36,11 @@ The syntax for the preprocessor is fairly simple:
        -  ``set``
           Finally, values **MUST** be literal. pypre cannot and will not
           interpret ``#define``\ s that include ``#define``\ d constant
-          names. *NOTE:* This preprocessor (unlike the C/C++
-          preprocessors) will not replace instances of names of
-          ``#define``\ d constants with their values in the code. It's
-          only meant for conditional compilation, and replacing names
-          with constants saves a miniscule amount of time at runtime for
-          the vast majority of Python scripts.
+          names.  
+          Just like the C/C++ preprocessor, anywhere a ``#define``d constant
+          is found within the source code (except on lines containing directives)
+          it will be replaced with its value. *WARNING:* This does not yet check
+          whether names are inside of string literals or comments.
 
 -  ``#undef <CONST>``
 
@@ -258,7 +257,7 @@ This file is part of pypre.
 
 
 __author__ = "ocket8888"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 import argparse
 import sys
